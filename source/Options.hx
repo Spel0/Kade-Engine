@@ -161,6 +161,27 @@ class MissSoundOption extends Option
 	}
 }
 
+class MuteVocalsOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.muteVocals = !FlxG.save.data.muteVocals;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return FlxG.save.data.muteVocals ? "Vocals Mute on Miss" : "Vocals Play on Miss";
+	}
+}
+
 class GhostTapOption extends Option
 {
 	public function new(desc:String)
@@ -832,6 +853,7 @@ class ResetSettings extends Option
 		FlxG.save.data.customStrumLine = null;
 		FlxG.save.data.camzoom = null;
 		FlxG.save.data.missSound = null;
+		FlxG.save.data.muteVocals = null;
 		KadeEngineData.initSave();
 		confirm = false;
 		trace('All settings have been reset');

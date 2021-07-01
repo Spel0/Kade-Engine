@@ -2656,7 +2656,9 @@ class PlayState extends MusicBeatState
 								else
 								{
 									health -= 0.075;
-									vocals.volume = 0;
+									if (FlxG.save.data.muteVocals)
+										vocals.volume = 0;
+
 									if (theFunne)
 										noteMiss(daNote.noteData, daNote);
 								}
