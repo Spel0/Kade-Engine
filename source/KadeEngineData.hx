@@ -96,9 +96,6 @@ class KadeEngineData
 
 		if (FlxG.save.data.optimize == null)
 			FlxG.save.data.optimize = false;
-		
-		if (FlxG.save.data.missSound == null)
-			FlxG.save.data.missSound = true;
 
 		if (FlxG.save.data.muteVocals == null)
 			FlxG.save.data.muteVocals = true;

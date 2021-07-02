@@ -140,27 +140,6 @@ class DownscrollOption extends Option
 	}
 }
 
-class MissSoundOption extends Option
-{
-	public function new(desc:String)
-	{
-		super();
-		description = desc;
-	}
-
-	public override function press():Bool
-	{
-		FlxG.save.data.missSound = !FlxG.save.data.missSound;
-		display = updateDisplay();
-		return true;
-	}
-
-	private override function updateDisplay():String
-	{
-		return FlxG.save.data.missSound ? "Miss Sounds" : "No Miss Sounds";
-	}
-}
-
 class MuteVocalsOption extends Option
 {
 	public function new(desc:String)
@@ -178,7 +157,7 @@ class MuteVocalsOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return FlxG.save.data.muteVocals ? "Vocals Mute on Miss" : "Vocals Play on Miss";
+		return FlxG.save.data.muteVocals ? "Vocals on Miss" : "No Vocals on Miss";
 	}
 }
 
