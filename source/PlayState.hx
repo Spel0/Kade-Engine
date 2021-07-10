@@ -346,27 +346,33 @@ class PlayState extends MusicBeatState
 		{
 			case 'tutorial':
 				dialogue = ["Hey you're pretty cute.", 'Use the arrow keys to keep up \nwith me singing.'];
-			case 'bopeebo':
+			/*case 'bopeebo':
 				dialogue = [
 					'HEY!',
 					"You think you can just sing\nwith my daughter like that?",
 					"If you want to date her...",
 					"You're going to have to go \nthrough ME first!"
-				];
-			case 'fresh':
+				];*/
+			/*case 'fresh':
 				dialogue = ["Not too shabby boy.", ""];
 			case 'dadbattle':
 				dialogue = [
 					"gah you think you're hot stuff?",
 					"If you can beat me here...",
 					"Only then I will even CONSIDER letting you\ndate my daughter!"
-				];
+				];*/
 			case 'senpai':
 				dialogue = CoolUtil.coolTextFile(Paths.txt('data/senpai/senpaiDialogue'));
 			case 'roses':
 				dialogue = CoolUtil.coolTextFile(Paths.txt('data/roses/rosesDialogue'));
 			case 'thorns':
 				dialogue = CoolUtil.coolTextFile(Paths.txt('data/thorns/thornsDialogue'));
+			case 'bopeebo':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('data/bopeebo/coolswag'));
+			case 'fresh':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('data/fresh/coolswag'));
+			case 'dadbattle':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('data/dadbattle/coolswag'));
 		}
 
 		//defaults if no stage was found in chart
@@ -1110,6 +1116,12 @@ class PlayState extends MusicBeatState
 					FlxG.sound.play(Paths.sound('ANGRY'));
 					schoolIntro(doof);
 				case 'thorns':
+					schoolIntro(doof);
+				case 'bopeebo':
+					schoolIntro(doof);
+				case 'fresh':
+					schoolIntro(doof);
+				case 'dad-battle':
 					schoolIntro(doof);
 				default:
 					startCountdown();
