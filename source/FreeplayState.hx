@@ -11,6 +11,8 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 
 
 #if windows
@@ -22,6 +24,15 @@ using StringTools;
 class FreeplayState extends MusicBeatState
 {
 	public static var songs:Array<SongMetadata> = [];
+	var weekColors:Array<FlxColor> = [
+		0xFFa6004d,
+		0xFFaf66ce,
+		0xFFb4b4b4,
+		0xFFb7d855,
+		0xFFd8558e,
+		0xFFFF00FF,
+		0xFFffaa6f
+	];
 
 	var selector:FlxText;
 	public static var curSelected:Int = 0;
@@ -35,6 +46,7 @@ class FreeplayState extends MusicBeatState
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
 	var combo:String = '';
+	var bg:FlxSprite;
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
@@ -110,7 +122,8 @@ class FreeplayState extends MusicBeatState
 
 		// LOAD CHARACTERS
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
+		bg = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
+		bg.color = weekColors[0];
 		add(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
@@ -270,10 +283,12 @@ class FreeplayState extends MusicBeatState
 		if (upP)
 		{
 			changeSelection(-1);
+			FlxTween.color(bg, 0.3, bg.color, weekColors[songs[curSelected].week]);
 		}
 		if (downP)
 		{
 			changeSelection(1);
+			FlxTween.color(bg, 0.3, bg.color, weekColors[songs[curSelected].week]);
 		}
 
 		//if (FlxG.keys.justPressed.SPACE && !openedPreview)
