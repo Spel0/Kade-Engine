@@ -92,8 +92,11 @@ class GameOverSubstate extends MusicBeatSubstate
 	{
 		super.beatHit();
 
-		if (!FlxG.sound.music.playing)
+		if (!FlxG.sound.music.playing) 
+		{
 			FlxG.sound.music.play();
+			FlxG.sound.music.looped = true;
+		}
 
 		if (startVibin && !isEnding)
 		{

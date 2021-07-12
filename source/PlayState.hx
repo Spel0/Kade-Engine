@@ -212,6 +212,7 @@ class PlayState extends MusicBeatState
 
 	var funneEffect:FlxSprite;
 	var inCutscene:Bool = false;
+	var dead:Bool = false;
 
 	public static var repPresses:Int = 0;
 	public static var repReleases:Int = 0;
@@ -2569,8 +2570,9 @@ class PlayState extends MusicBeatState
 			persistentDraw = false;
 			paused = true;
 
+			dead = true;
 			vocals.stop();
-			FlxG.sound.music.pause();
+			FlxG.sound.music.stop();
 
 			openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
@@ -2602,6 +2604,7 @@ class PlayState extends MusicBeatState
 				persistentDraw = false;
 				paused = true;
 
+				dead = true;
 				vocals.stop();
 				FlxG.sound.music.pause();
 
@@ -2960,162 +2963,164 @@ class PlayState extends MusicBeatState
 
 	function endSong():Void
 	{
-		FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
-		FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, releaseInput);
-		if (useVideo)
-		{
-			GlobalVideo.get().stop();
-			FlxG.stage.window.onFocusOut.remove(focusOut);
-			FlxG.stage.window.onFocusIn.remove(focusIn);
-			PlayState.instance.remove(PlayState.instance.videoSprite);
-		}
-
-		if (isStoryMode)
-			campaignMisses = misses;
-
-		if (!loadRep)
-			rep.SaveReplay(saveNotes, saveJudge, replayAna);
-		else
-		{
-			PlayStateChangeables.botPlay = false;
-			PlayStateChangeables.scrollSpeed = 1;
-			PlayStateChangeables.useDownscroll = false;
-		}
-
-		if (FlxG.save.data.fpsCap > 290)
-			(cast(Lib.current.getChildAt(0), Main)).setFPSCap(290);
-
-		#if windows
-		if (luaModchart != null)
-		{
-			luaModchart.die();
-			luaModchart = null;
-		}
-		#end
-
-		canPause = false;
-		FlxG.sound.music.volume = 0;
-		vocals.volume = 0;
-		FlxG.sound.music.pause();
-		vocals.pause();
-		if (SONG.validScore)
-		{
-			// adjusting the highscore song name to be compatible
-			// would read original scores if we didn't change packages
-			var songHighscore = StringTools.replace(PlayState.SONG.song, " ", "-");
-			switch (songHighscore)
+		if (!dead) {
+			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
+			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, releaseInput);
+			if (useVideo)
 			{
-				case 'Dad-Battle':
-					songHighscore = 'Dadbattle';
-				case 'Philly-Nice':
-					songHighscore = 'Philly';
+				GlobalVideo.get().stop();
+				FlxG.stage.window.onFocusOut.remove(focusOut);
+				FlxG.stage.window.onFocusIn.remove(focusIn);
+				PlayState.instance.remove(PlayState.instance.videoSprite);
 			}
 
-			#if !switch
-			Highscore.saveScore(songHighscore, Math.round(songScore), storyDifficulty);
-			Highscore.saveCombo(songHighscore, Ratings.GenerateLetterRank(accuracy), storyDifficulty);
-			#end
-		}
-
-		if (offsetTesting)
-		{
-			FlxG.sound.playMusic(Paths.music('freakyMenu'));
-			offsetTesting = false;
-			LoadingState.loadAndSwitchState(new OptionsMenu());
-			FlxG.save.data.offset = offsetTest;
-		}
-		else
-		{
 			if (isStoryMode)
+				campaignMisses = misses;
+
+			if (!loadRep)
+				rep.SaveReplay(saveNotes, saveJudge, replayAna);
+			else
 			{
-				campaignScore += Math.round(songScore);
+				PlayStateChangeables.botPlay = false;
+				PlayStateChangeables.scrollSpeed = 1;
+				PlayStateChangeables.useDownscroll = false;
+			}
 
-				storyPlaylist.remove(storyPlaylist[0]);
+			if (FlxG.save.data.fpsCap > 290)
+				(cast(Lib.current.getChildAt(0), Main)).setFPSCap(290);
 
-				if (storyPlaylist.length <= 0)
+			#if windows
+			if (luaModchart != null)
+			{
+				luaModchart.die();
+				luaModchart = null;
+			}
+			#end
+
+			canPause = false;
+			FlxG.sound.music.volume = 0;
+			vocals.volume = 0;
+			FlxG.sound.music.pause();
+			vocals.pause();
+			if (SONG.validScore)
+			{
+				// adjusting the highscore song name to be compatible
+				// would read original scores if we didn't change packages
+				var songHighscore = StringTools.replace(PlayState.SONG.song, " ", "-");
+				switch (songHighscore)
 				{
-					transIn = FlxTransitionableState.defaultTransIn;
-					transOut = FlxTransitionableState.defaultTransOut;
+					case 'Dad-Battle':
+						songHighscore = 'Dadbattle';
+					case 'Philly-Nice':
+						songHighscore = 'Philly';
+				}
+
+				#if !switch
+				Highscore.saveScore(songHighscore, Math.round(songScore), storyDifficulty);
+				Highscore.saveCombo(songHighscore, Ratings.GenerateLetterRank(accuracy), storyDifficulty);
+				#end
+			}
+
+			if (offsetTesting)
+			{
+				FlxG.sound.playMusic(Paths.music('freakyMenu'));
+				offsetTesting = false;
+				LoadingState.loadAndSwitchState(new OptionsMenu());
+				FlxG.save.data.offset = offsetTest;
+			}
+			else
+			{
+				if (isStoryMode)
+				{
+					campaignScore += Math.round(songScore);
+
+					storyPlaylist.remove(storyPlaylist[0]);
+
+					if (storyPlaylist.length <= 0)
+					{
+						transIn = FlxTransitionableState.defaultTransIn;
+						transOut = FlxTransitionableState.defaultTransOut;
+
+						paused = true;
+
+						FlxG.sound.music.stop();
+						vocals.stop();
+						if (FlxG.save.data.scoreScreen)
+							openSubState(new ResultsScreen());
+						else
+						{
+							FlxG.sound.playMusic(Paths.music('freakyMenu'));
+							FlxG.switchState(new StoryMenuState());
+						}
+
+						#if windows
+						if (luaModchart != null)
+						{
+							luaModchart.die();
+							luaModchart = null;
+						}
+						#end
+
+						if (SONG.validScore)
+						{
+							NGio.unlockMedal(60961);
+							Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
+						}
+
+						StoryMenuState.unlockNextWeek(storyWeek);
+					}
+					else
+					{
+						// adjusting the song name to be compatible
+						var songFormat = StringTools.replace(PlayState.storyPlaylist[0], " ", "-");
+						switch (songFormat)
+						{
+							case 'Dad-Battle':
+								songFormat = 'Dadbattle';
+							case 'Philly-Nice':
+								songFormat = 'Philly';
+						}
+
+						var poop:String = Highscore.formatSong(songFormat, storyDifficulty);
+
+						trace('LOADING NEXT SONG');
+						trace(poop);
+
+						if (StringTools.replace(PlayState.storyPlaylist[0], " ", "-").toLowerCase() == 'eggnog')
+						{
+							var blackShit:FlxSprite = new FlxSprite(-FlxG.width * FlxG.camera.zoom,
+								-FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
+							blackShit.scrollFactor.set();
+							add(blackShit);
+							camHUD.visible = false;
+
+							FlxG.sound.play(Paths.sound('Lights_Shut_off'));
+						}
+
+						FlxTransitionableState.skipNextTransIn = true;
+						FlxTransitionableState.skipNextTransOut = true;
+						prevCamFollow = camFollow;
+
+						PlayState.SONG = Song.loadFromJson(poop, PlayState.storyPlaylist[0]);
+						FlxG.sound.music.stop();
+
+						LoadingState.loadAndSwitchState(new PlayState());
+					}
+				}
+				else
+				{
+					trace('WENT BACK TO FREEPLAY??');
 
 					paused = true;
 
 					FlxG.sound.music.stop();
 					vocals.stop();
+
 					if (FlxG.save.data.scoreScreen)
 						openSubState(new ResultsScreen());
 					else
-					{
-						FlxG.sound.playMusic(Paths.music('freakyMenu'));
-						FlxG.switchState(new StoryMenuState());
-					}
-
-					#if windows
-					if (luaModchart != null)
-					{
-						luaModchart.die();
-						luaModchart = null;
-					}
-					#end
-
-					if (SONG.validScore)
-					{
-						NGio.unlockMedal(60961);
-						Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
-					}
-
-					StoryMenuState.unlockNextWeek(storyWeek);
+						FlxG.switchState(new FreeplayState());
 				}
-				else
-				{
-					// adjusting the song name to be compatible
-					var songFormat = StringTools.replace(PlayState.storyPlaylist[0], " ", "-");
-					switch (songFormat)
-					{
-						case 'Dad-Battle':
-							songFormat = 'Dadbattle';
-						case 'Philly-Nice':
-							songFormat = 'Philly';
-					}
-
-					var poop:String = Highscore.formatSong(songFormat, storyDifficulty);
-
-					trace('LOADING NEXT SONG');
-					trace(poop);
-
-					if (StringTools.replace(PlayState.storyPlaylist[0], " ", "-").toLowerCase() == 'eggnog')
-					{
-						var blackShit:FlxSprite = new FlxSprite(-FlxG.width * FlxG.camera.zoom,
-							-FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
-						blackShit.scrollFactor.set();
-						add(blackShit);
-						camHUD.visible = false;
-
-						FlxG.sound.play(Paths.sound('Lights_Shut_off'));
-					}
-
-					FlxTransitionableState.skipNextTransIn = true;
-					FlxTransitionableState.skipNextTransOut = true;
-					prevCamFollow = camFollow;
-
-					PlayState.SONG = Song.loadFromJson(poop, PlayState.storyPlaylist[0]);
-					FlxG.sound.music.stop();
-
-					LoadingState.loadAndSwitchState(new PlayState());
-				}
-			}
-			else
-			{
-				trace('WENT BACK TO FREEPLAY??');
-
-				paused = true;
-
-				FlxG.sound.music.stop();
-				vocals.stop();
-
-				if (FlxG.save.data.scoreScreen)
-					openSubState(new ResultsScreen());
-				else
-					FlxG.switchState(new FreeplayState());
 			}
 		}
 	}
