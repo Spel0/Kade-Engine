@@ -6,6 +6,7 @@ import flixel.FlxSubState;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import flixel.system.FlxSound;
 
 class GameOverSubstate extends MusicBeatSubstate
 {
@@ -29,7 +30,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		super();
 
-		Conductor.songPosition = 0;
+		//Conductor.songPosition = 0;
 
 		bf = new Boyfriend(x, y, daBf);
 		add(bf);
@@ -38,7 +39,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		add(camFollow);
 
 		FlxG.sound.play(Paths.sound('fnf_loss_sfx' + stageSuffix));
-		Conductor.changeBPM(100);
+		//Conductor.changeBPM(PlayState.SONG.bpm);
 
 		// FlxG.camera.followLerp = 1;
 		// FlxG.camera.focusOn(FlxPoint.get(FlxG.width / 2, FlxG.height / 2));
@@ -48,7 +49,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		bf.playAnim('firstDeath');
 	}
 
-	var startVibin:Bool = false;
+	var startVibin:Bool = false;	
 
 	override function update(elapsed:Float)
 	{
@@ -77,7 +78,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.finished)
 		{
-			FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix));
+			//FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix));
 			startVibin = true;
 		}
 
@@ -90,6 +91,9 @@ class GameOverSubstate extends MusicBeatSubstate
 	override function beatHit()
 	{
 		super.beatHit();
+
+		if (!FlxG.sound.music.playing)
+			FlxG.sound.music.play();
 
 		if (startVibin && !isEnding)
 		{
