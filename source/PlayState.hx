@@ -176,6 +176,8 @@ class PlayState extends MusicBeatState
 	var idleBeat:Int = 1; // how frequently bf and dad would play their idle animation(1 - every beat, 2 - every 2 beats and so on)
 
 	public var dialogue:Array<String> = ['dad:blah blah blah', 'bf:coolswag'];
+	var classicBF:Boyfriend;
+	var pico:Boyfriend;
 
 	var halloweenBG:FlxSprite;
 	var isHalloween:Bool = false;
@@ -923,7 +925,13 @@ class PlayState extends MusicBeatState
 				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
 		}
 
-		boyfriend = new Boyfriend(770, 450, SONG.player1);
+		if (SONG.song.toLowerCase() == 'bopeebo') {
+			pico = new Boyfriend(900, 450, 'pico');
+			classicBF = new Boyfriend(770, 450, SONG.player1);
+		}
+		else
+			boyfriend = new Boyfriend(770, 450, SONG.player1);
+
 
 		// REPOSITIONING PER STAGE
 		switch (curStage)
@@ -964,7 +972,13 @@ class PlayState extends MusicBeatState
 				add(limo);
 
 			add(dad);
-			add(boyfriend);
+			if (SONG.song.toLowerCase() == 'bopeebo') {
+				add(pico);
+				boyfriend = classicBF;
+				add(boyfriend);
+			}
+			else
+				add(boyfriend);
 		}
 
 		if (loadRep)
@@ -4198,6 +4212,7 @@ class PlayState extends MusicBeatState
 
 	var lightningStrikeBeat:Int = 0;
 	var lightningOffset:Int = 8;
+	var changed:Bool = false;
 
 	override function beatHit()
 	{
@@ -4282,6 +4297,20 @@ class PlayState extends MusicBeatState
 		if (curBeat % 8 == 7 && curSong == 'Bopeebo')
 		{
 			boyfriend.playAnim('hey', true);
+		}
+
+		if (curSong == 'Bopeebo') {
+			if (curBeat % 8 == 0) {
+				if (!changed) {
+					boyfriend = pico;
+					changed = !changed;
+				}
+				else {
+					boyfriend = classicBF;
+					changed = !changed;
+				}
+			}
+
 		}
 
 		if (curBeat % 16 == 15 && SONG.song == 'Tutorial' && dad.curCharacter == 'gf' && curBeat > 16 && curBeat < 48)
