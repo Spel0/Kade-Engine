@@ -2118,7 +2118,8 @@ class PlayState extends MusicBeatState
 			}*/
 
 			FlxG.camera.angle = luaModchart.getVar('cameraAngle', 'float');
-			camHUD.angle = luaModchart.getVar('camHudAngle', 'float');
+			if (!stopHudUpdate)
+				camHUD.angle = luaModchart.getVar('camHudAngle','float');
 
 			if (luaModchart.getVar("showOnlyStrums", 'bool'))
 			{
@@ -3474,6 +3475,8 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	public var stopHudUpdate = false;
+
 	public function NearlyEquals(value1:Float, value2:Float, unimportantDifference:Float = 10):Bool
 	{
 		return Math.abs(FlxMath.roundDecimal(value1, 1) - FlxMath.roundDecimal(value2, 1)) < unimportantDifference;
@@ -4269,7 +4272,7 @@ class PlayState extends MusicBeatState
 			gf.dance();
 		}
 
-		if (!boyfriend.animation.curAnim.name.startsWith("sing") && curBeat % idleBeat == 0)
+		if (!boyfriend.animation.curAnim.name.startsWith("sing") && curBeat % idleBeat == 0 && boyfriend.animation.curAnim.finished)
 		{
 			boyfriend.playAnim('idle', idleToBeat);
 		}
