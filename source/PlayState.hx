@@ -208,6 +208,7 @@ class PlayState extends MusicBeatState
 	var skip:Bool = false;
 	var skipFile:Array<String>;
 	var skipText:FlxText;
+	var countdownEnded:Bool = false;
 
 	public static var campaignScore:Int = 0;
 
@@ -1223,30 +1224,32 @@ class PlayState extends MusicBeatState
 		{
 			try
 				{
+					var skipAppeared = false;
 					var currentSong:String = StringTools.replace(SONG.song, " ", "").toLowerCase();
 					skipFile = CoolUtil.coolTextFile(Paths.txt('data/$currentSong/skip', 'preload'));
 					if (skipFile == null)
 					{
-						trace('null');
 						return;
 					}
 					else
 					{
-						trace(skipFile);
-						new FlxTimer().start(SONG.bpm*60*4/20000, function(tmr:FlxTimer) {
-						skip = true;
-						skipText = new FlxText(healthBarBG.x, healthBarBG.y - 90, 500);
-						skipText.text = "Skip Intro(Press Space)";
-						skipText.size = 30;
-						skipText.color = 0xFFADD8E6;
-						skipText.cameras = [camHUD];
-						add(skipText);
-						});
+						new FlxTimer().start(0.5, function(tmr:FlxTimer) {
+						if (!skipAppeared && countdownEnded)
+						{
+							skip = true;
+							skipText = new FlxText(healthBarBG.x, healthBarBG.y - 90, 500);
+							skipText.text = "Skip Intro(Press Space)";
+							skipText.size = 30;
+							skipText.color = 0xFFADD8E6;
+							skipText.cameras = [camHUD];
+							add(skipText);
+							skipAppeared = true;
+						}
+						}, 20);
 					}
 				}
 				catch(ex)
 				{
-					trace(ex);
 					return;
 				}
 		}
@@ -4270,6 +4273,9 @@ class PlayState extends MusicBeatState
 		{
 			notes.sort(FlxSort.byY, (PlayStateChangeables.useDownscroll ? FlxSort.ASCENDING : FlxSort.DESCENDING));
 		}
+
+		if (!countdownEnded)
+			countdownEnded = true;
 
 		#if windows
 		if (executeModchart && luaModchart != null)
