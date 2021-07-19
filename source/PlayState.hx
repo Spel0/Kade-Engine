@@ -204,6 +204,10 @@ class PlayState extends MusicBeatState
 	var songScoreDef:Int = 0;
 	var scoreTxt:FlxText;
 	var replayTxt:FlxText;
+	
+	var skip:Bool = false;
+	var skipFile:Array<String>;
+	var skipText:FlxText;
 
 	public static var campaignScore:Int = 0;
 
@@ -275,6 +279,24 @@ class PlayState extends MusicBeatState
 			bads = 0;
 			shits = 0;
 			goods = 0;
+			try
+			{
+				skipFile = CoolUtil.coolTextFile('data/$curSong/skip');
+				if (skipFile == null)
+					return;
+				else
+				{
+					skip = true;
+					skipText = new FlxText();
+					skipText.text = "Skip Intro(press Space)";
+					skipText.size = 20;
+					skipText.screenCenter();
+				}
+			}
+			catch(ex)
+			{
+				return;
+			}
 		}
 		misses = 0;
 
@@ -2176,6 +2198,24 @@ class PlayState extends MusicBeatState
 				iconP1.animation.play(SONG.player1);
 			else
 				iconP1.animation.play('bf-old');
+		}
+
+		if (FlxG.keys.justPressed.SPACE)
+		{
+			if (skip)
+			{
+				FlxG.sound.music.pause();
+				vocals.pause();
+				Conductor.songPosition += Std.parseInt(skipFile[0]);
+		
+				FlxG.sound.music.time = Conductor.songPosition;
+				FlxG.sound.music.play();
+		
+				vocals.time = Conductor.songPosition;
+				vocals.play();
+				skipText.destroy();
+				skip = false;
+			}
 		}
 
 		switch (curStage)
@@ -4157,7 +4197,7 @@ class PlayState extends MusicBeatState
 	override function stepHit()
 	{
 		super.stepHit();
-		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
+		if ((FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20) && vocals != null)
 		{
 			resyncVocals();
 		}
