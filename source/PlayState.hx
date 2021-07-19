@@ -1235,11 +1235,10 @@ class PlayState extends MusicBeatState
 						trace(skipFile);
 						new FlxTimer().start(SONG.bpm*60*4/20000, function(tmr:FlxTimer) {
 						skip = true;
-						skipText = new FlxText(0, 0, 500);
-						skipText.text = "Skip Intro(press Space)";
-						skipText.screenCenter(X);
-						skipText.screenCenter(Y);
+						skipText = new FlxText(healthBarBG.x, healthBarBG.y - 90, 500);
+						skipText.text = "Skip Intro(Press Space)";
 						skipText.size = 30;
+						skipText.color = 0xFFADD8E6;
 						skipText.cameras = [camHUD];
 						add(skipText);
 						});
