@@ -279,24 +279,6 @@ class PlayState extends MusicBeatState
 			bads = 0;
 			shits = 0;
 			goods = 0;
-			try
-			{
-				skipFile = CoolUtil.coolTextFile('data/$curSong/skip');
-				if (skipFile == null)
-					return;
-				else
-				{
-					skip = true;
-					skipText = new FlxText();
-					skipText.text = "Skip Intro(press Space)";
-					skipText.size = 20;
-					skipText.screenCenter();
-				}
-			}
-			catch(ex)
-			{
-				return;
-			}
 		}
 		misses = 0;
 
@@ -1236,6 +1218,39 @@ class PlayState extends MusicBeatState
 
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, handleInput);
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, releaseInput);
+
+		if (!isStoryMode)
+		{
+			try
+				{
+					var currentSong:String = StringTools.replace(SONG.song, " ", "").toLowerCase();
+					skipFile = CoolUtil.coolTextFile(Paths.txt('data/$currentSong/skip', 'preload'));
+					if (skipFile == null)
+					{
+						trace('null');
+						return;
+					}
+					else
+					{
+						trace(skipFile);
+						new FlxTimer().start(SONG.bpm*60*4/20000, function(tmr:FlxTimer) {
+						skip = true;
+						skipText = new FlxText(0, 0, 500);
+						skipText.text = "Skip Intro(press Space)";
+						skipText.screenCenter(X);
+						skipText.screenCenter(Y);
+						skipText.size = 30;
+						skipText.cameras = [camHUD];
+						add(skipText);
+						});
+					}
+				}
+				catch(ex)
+				{
+					trace(ex);
+					return;
+				}
+		}
 		super.create();
 	}
 
@@ -2200,20 +2215,29 @@ class PlayState extends MusicBeatState
 				iconP1.animation.play('bf-old');
 		}
 
+		if (skip)
+		{
+			if (Conductor.songPosition >= Std.parseInt(skipFile[0]))
+			{
+				remove(skipText);
+				skip = false;
+			}
+		}
+
 		if (FlxG.keys.justPressed.SPACE)
 		{
 			if (skip)
 			{
 				FlxG.sound.music.pause();
 				vocals.pause();
-				Conductor.songPosition += Std.parseInt(skipFile[0]);
+				Conductor.songPosition = Std.parseInt(skipFile[0]);
 		
 				FlxG.sound.music.time = Conductor.songPosition;
 				FlxG.sound.music.play();
 		
 				vocals.time = Conductor.songPosition;
 				vocals.play();
-				skipText.destroy();
+				remove(skipText);
 				skip = false;
 			}
 		}
