@@ -32,6 +32,7 @@ class Note extends FlxSprite
 	public var isSustainNote:Bool = false;
 	public var originColor:Int = 0; // The sustain note's original note's color
 	public var noteSection:Int = 0;
+	public var noteType:Int = 0;
 
 	public var noteCharterObject:FlxSprite;
 
@@ -61,7 +62,7 @@ class Note extends FlxSprite
 
 	public var children:Array<Note> = [];
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false)
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false, ?noteType:Int = 0)
 	{
 		super();
 
@@ -97,6 +98,7 @@ class Note extends FlxSprite
 			this.strumTime = 0;
 
 		this.noteData = noteData;
+		this.noteType = noteType;
 
 		var daStage:String = PlayState.curStage;
 
@@ -123,9 +125,6 @@ class Note extends FlxSprite
 		}
 		else
 		{
-			if (PlayState.SONG.noteStyle == null) {
-				switch(PlayState.storyWeek) {case 6: noteTypeCheck = 'pixel';}
-			} else {noteTypeCheck = PlayState.SONG.noteStyle;}
 			
 			switch (noteTypeCheck)
 			{
@@ -145,12 +144,29 @@ class Note extends FlxSprite
 					updateHitbox();
 				default:
 					frames = Paths.getSparrowAtlas('NOTE_assets');
-
-					for (i in 0...4)
+					var fire = Paths.getSparrowAtlas('NOTE_fire', 'shared');
+					for (note in fire.frames)
 					{
-						animation.addByPrefix(dataColor[i] + 'Scroll', dataColor[i] + ' alone'); // Normal notes
-						animation.addByPrefix(dataColor[i] + 'hold', dataColor[i] + ' hold'); // Hold
-						animation.addByPrefix(dataColor[i] + 'holdend', dataColor[i] + ' tail'); // Tails
+						this.frames.pushFrame(note);
+					}
+
+					switch (noteType)
+					{
+						case 2:
+							frames = Paths.getSparrowAtlas('NOTE_fire', 'shared');
+							x -= 100;
+							for (i in 0...4)
+							{
+								animation.addByPrefix(dataColor[i] + 'Scroll', dataColor[i] + ' fire');
+							}
+						default:
+							frames = Paths.getSparrowAtlas('NOTE_assets');
+							for (i in 0...4)
+							{
+								animation.addByPrefix(dataColor[i] + 'Scroll', dataColor[i] + ' alone'); // Normal notes
+								animation.addByPrefix(dataColor[i] + 'hold', dataColor[i] + ' hold'); // Hold
+								animation.addByPrefix(dataColor[i] + 'holdend', dataColor[i] + ' tail'); // Tails
+							}
 					}
 
 					setGraphicSize(Std.int(width * 0.7));
