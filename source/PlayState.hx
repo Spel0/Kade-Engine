@@ -3913,8 +3913,11 @@ class PlayState extends MusicBeatState
 					}
 					else
 					{
-						goodNoteHit(daNote);
-						boyfriend.holdTimer = daNote.sustainLength;
+						if (daNote.noteType != 2)
+						{
+							goodNoteHit(daNote);
+							boyfriend.holdTimer = daNote.sustainLength;
+						}
 					}
 				}
 			}
