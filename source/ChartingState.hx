@@ -1008,6 +1008,9 @@ class ChartingState extends MusicBeatState
                 resetSection(true);
             });
 
+		var sniftToTime:FlxButton;
+		var sniftToSection:FlxButton;
+
 		var loadAutosaveBtn:FlxButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, 'load autosave', loadAutosave);
 		var stepperBPM:FlxUINumericStepper = new FlxUINumericStepper(10, 65, 0.1, 1, 1.0, 5000.0, 1);
 		stepperBPM.value = Conductor.bpm;
@@ -1040,7 +1043,12 @@ class ChartingState extends MusicBeatState
 
 		var stepperSongVolLabel = new FlxText(74, 110, 'Instrumental Volume');
 
-		
+		var stepperSniftToTime =  new FlxUINumericStepper(225, 165, 5, 0, 0, FlxG.sound.music.length / 1000 - 0.01, 2);
+		stepperSniftToTime.name = 'song_snifttime';
+
+		var stepperSniftToSection = new FlxUINumericStepper(225, 215, 1, 0, 0);
+		stepperSniftToSection.name = 'song_sniftsection';
+
 		var shiftNoteDialLabel = new FlxText(10, 245, 'Shift Note FWD by (Section)');
 		var stepperShiftNoteDial:FlxUINumericStepper = new FlxUINumericStepper(10, 260, 1, 0, -1000, 1000, 0);
 		stepperShiftNoteDial.name = 'song_shiftnote';
@@ -1055,6 +1063,22 @@ class ChartingState extends MusicBeatState
 		{
 			shiftNotes(Std.int(stepperShiftNoteDial.value),Std.int(stepperShiftNoteDialstep.value),Std.int(stepperShiftNoteDialms.value));
 		});
+
+		var sniftToTimeLabel = new FlxText(230, 147, 'Seconds');
+		sniftToTime = new FlxButton(135,162,"Snift to", function()
+			{
+				FlxG.sound.music.pause();
+				vocals.pause();
+				claps.splice(0, claps.length);
+				FlxG.sound.music.time = stepperSniftToTime.value * 1000;
+				vocals.time = FlxG.sound.music.time;
+			});
+
+		var sniftToSectionLabel = new FlxText(230, 197, 'Section');
+		sniftToSection = new FlxButton(135, 212,"Shift to", function()
+			{
+				changeSection(Std.int(stepperSniftToSection.value));
+			});
 
 		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('data/characterList'));
 		var gfVersions:Array<String> = CoolUtil.coolTextFile(Paths.txt('data/gfVersionList'));
@@ -1120,6 +1144,12 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(stepperVocalVolLabel);
 		tab_group_song.add(stepperSongVol);
 		tab_group_song.add(stepperSongVolLabel);
+		tab_group_song.add(stepperSniftToTime);
+		tab_group_song.add(sniftToTimeLabel);
+		tab_group_song.add(sniftToTime);
+		tab_group_song.add(sniftToSectionLabel);
+		tab_group_song.add(stepperSniftToSection);
+		tab_group_song.add(sniftToSection);
         tab_group_song.add(shiftNoteDialLabel);
         tab_group_song.add(stepperShiftNoteDial);
         tab_group_song.add(shiftNoteDialLabel2);
@@ -2072,6 +2102,11 @@ class ChartingState extends MusicBeatState
 		if (_song.notes[sec] != null)
 		{
 			trace('naw im not null');
+			if (sectionStartTime(sec) > FlxG.sound.music.length)
+			{
+				changeSection(0);
+				return;
+			}
 			curSection = sec;
 
 			updateGrid();
@@ -2135,7 +2170,6 @@ class ChartingState extends MusicBeatState
 		{
 			check_mustHitSection.checked = sec.mustHitSection;
 			check_altAnim.checked = sec.altAnim;
-			check_changeBPM.checked = sec.changeBPM;
 		}
 	}
 
@@ -2587,8 +2621,8 @@ class ChartingState extends MusicBeatState
 		var difficultyArray:Array<String> = ["-easy", "", "-hard"];
 		var format = StringTools.replace(PlayState.SONG.song.toLowerCase(), " ", "-");
 		switch (format) {
-			case 'Dad-Battle': format = 'Dadbattle';
-			case 'Philly-Nice': format = 'Philly';
+			case 'dad-battle': format = 'Dadbattle';
+			case 'philly-nice': format = 'Philly';
 		}
 		PlayState.SONG = Song.loadFromJson(format + difficultyArray[PlayState.storyDifficulty], format);
 		LoadingState.loadAndSwitchState(new ChartingState());
