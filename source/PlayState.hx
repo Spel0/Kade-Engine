@@ -4560,6 +4560,22 @@ class PlayState extends MusicBeatState
 			dad.playAnim('cheer', true);
 		}
 
+		for (section in SONG.notes)
+			{
+				if (section.changeCharacter)
+				{
+					if (section.changingCharacter != '' && section.changingCharBeat != 0)
+					{
+						if (section.changingCharBeat == curBeat)
+							{
+								remove(dad);
+								dad = new Character(0, 0, section.changingCharacter);
+								add(dad);
+							}
+					}
+				}
+			}
+
 		switch (curStage)
 		{
 			case 'school':

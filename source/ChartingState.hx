@@ -1174,6 +1174,7 @@ class ChartingState extends MusicBeatState
 	var stepperLength:FlxUINumericStepper;
 	var check_mustHitSection:FlxUICheckBox;
 	var check_changeBPM:FlxUICheckBox;
+	var check_changeCharacter:FlxUICheckBox;
 	var stepperSectionBPM:FlxUINumericStepper;
 	var check_altAnim:FlxUICheckBox;
 
@@ -1185,6 +1186,8 @@ class ChartingState extends MusicBeatState
 
 		var stepperCopy:FlxUINumericStepper = new FlxUINumericStepper(110, 132, 1, 1, -999, 999, 0);
 		var stepperCopyLabel = new FlxText(174,132,'sections back');
+		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('data/characterList'));
+		var stepperChangingCharBeat:FlxUINumericStepper;
 
 		var copyButton:FlxButton = new FlxButton(10, 130, "Copy last section", function()
 		{
@@ -1243,6 +1246,47 @@ class ChartingState extends MusicBeatState
 		check_mustHitSection.checked = true;
 		// _song.needsVoices = check_mustHit.checked;
 
+		var changingCharacter = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
+			{
+				var sect = lastUpdatedSection;
+
+				trace(sect);
+
+				if (sect == null)
+					return;
+
+				sect.changingCharacter = characters[Std.parseInt(character)];
+			});
+			var sect = lastUpdatedSection;
+			if (sect != null)
+				changingCharacter.selectedLabel = sect.changingCharacter;
+
+			var changingCharBeat = new FlxUINumericStepper(80, 120, 1, 0, curSection, 999, 0);
+			changingCharBeat.name = 'section_changingCharBeat';
+
+			check_changeCharacter = new FlxUICheckBox(10, 60, null, null, "Change opponent character?", 100,null,function() {
+				var sect = lastUpdatedSection;
+	
+				trace(sect);
+	
+				if (sect == null)
+					return;
+	
+				sect.changeCharacter = check_changeCharacter.checked;
+			}); 
+	
+	
+			var apply = new FlxButton(200, 120, "Apply", function() {
+				var sect = lastUpdatedSection;
+	
+				trace(sect);
+	
+				if (sect == null)
+					return;
+	
+				sect.changingCharBeat = Std.int(changingCharBeat.value);
+			});
+
 		check_altAnim = new FlxUICheckBox(10, 340, null, null, "Alternate Animation", 100);
 		check_altAnim.name = 'check_altAnim';
 
@@ -1253,6 +1297,7 @@ class ChartingState extends MusicBeatState
 				return;
 
 			check_mustHitSection.checked = section.mustHitSection;
+			check_changeCharacter.checked = section.changeCharacter;
 			check_altAnim.checked = section.altAnim;
 		});
 
@@ -1274,6 +1319,10 @@ class ChartingState extends MusicBeatState
 		tab_group_section.add(copyButton);
 		tab_group_section.add(clearSectionButton);
 		tab_group_section.add(swapSection);
+		tab_group_section.add(changingCharacter);
+		tab_group_section.add(changingCharBeat);
+		tab_group_section.add(check_changeCharacter);
+		tab_group_section.add(apply);
 
 		UI_box.addGroup(tab_group_section);
 	}
@@ -1737,6 +1786,7 @@ class ChartingState extends MusicBeatState
 			{
 				lastUpdatedSection = weird;
 				check_mustHitSection.checked = weird.mustHitSection;
+				check_changeCharacter.checked = weird.changeCharacter;
 				check_altAnim.checked = weird.altAnim;
 			}
 		}
@@ -2159,11 +2209,13 @@ class ChartingState extends MusicBeatState
 		if (sec == null)
 		{
 			check_mustHitSection.checked = true;
+			check_changeCharacter.checked = false;
 			check_altAnim.checked = false;
 		}
 		else
 		{
 			check_mustHitSection.checked = sec.mustHitSection;
+			check_changeCharacter.checked = sec.changeCharacter;
 			check_altAnim.checked = sec.altAnim;
 			check_changeBPM.checked = sec.changeBPM;
 		}
@@ -2281,6 +2333,9 @@ class ChartingState extends MusicBeatState
 			lengthInSteps: lengthInSteps,
 			bpm: _song.bpm,
 			changeBPM: false,
+			changeCharacter: false,
+			changingCharacter: 'bf',
+			changingCharBeat: 0,
 			mustHitSection: true,
 			sectionNotes: [],
 			typeOfSection: 0,
@@ -2385,6 +2440,9 @@ class ChartingState extends MusicBeatState
 				lengthInSteps: lengthInSteps,
 				bpm: _song.bpm,
 				changeBPM: false,
+				changingCharacter: 'bf',
+				changeCharacter: false,
+				changingCharBeat: 0,
 				mustHitSection: mustHitSection,
 				sectionNotes: [],
 				typeOfSection: 0,
