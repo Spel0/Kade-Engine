@@ -100,6 +100,9 @@ class Note extends FlxSprite
 		this.noteData = noteData;
 		this.noteType = noteType;
 
+		if (noteType == 1)
+			this.noteData = noteData = FlxG.random.int(0,3);
+
 		var daStage:String = PlayState.curStage;
 
 		//defaults if no noteStyle was found in chart

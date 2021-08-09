@@ -2481,7 +2481,7 @@ class ChartingState extends MusicBeatState
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 		var noteSus = 0;
 		var noteType = 0;
-		if (FlxG.keys.pressed.ONE)
+		if (FlxG.keys.pressed.Z)
 			noteType = 1;
 		if (FlxG.keys.pressed.ALT)
 		{
