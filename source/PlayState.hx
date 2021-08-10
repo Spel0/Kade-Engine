@@ -1957,6 +1957,33 @@ class PlayState extends MusicBeatState
 		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.strumTime, Obj2.strumTime);
 	}
 
+	public function changeNoteStyle(style:String)
+	{
+		function updateDes(note:Note)
+		{
+			note.updateDesign();
+			if (note.children.length > 0)
+				for (childNote in note.children)
+					{
+						updateDes(childNote);
+					}
+		}
+		SONG.noteStyle = style;
+		cpuStrums.clear();
+		playerStrums.clear();
+		strumLineNotes.clear();
+		generateStaticArrows(0);
+		generateStaticArrows(1);
+		for (note in unspawnNotes) 
+		{
+			updateDes(note);
+		}
+		for (activeNote in notes) 
+		{
+			updateDes(activeNote);
+		}
+	}
+
 	private function generateStaticArrows(player:Int):Void
 	{
 		for (i in 0...4)
@@ -1986,7 +2013,7 @@ class PlayState extends MusicBeatState
 			switch (noteTypeCheck)
 			{
 				case 'pixel':
-					babyArrow.loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
+					babyArrow.loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
 					babyArrow.animation.add('green', [6]);
 					babyArrow.animation.add('red', [7]);
 					babyArrow.animation.add('blue', [5]);
@@ -2021,7 +2048,7 @@ class PlayState extends MusicBeatState
 					}
 
 				default:
-					babyArrow.frames = Paths.getSparrowAtlas('NOTE_assets');
+					babyArrow.frames = Paths.getSparrowAtlas('NOTE_assets', 'shared');
 					for (j in 0...4)
 					{
 						babyArrow.animation.addByPrefix(dataColor[j], 'arrow' + dataSuffix[j]);	
@@ -3045,7 +3072,7 @@ class PlayState extends MusicBeatState
 									{
 										spr.animation.play('confirm', true);
 									}
-									if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+									if (spr.animation.curAnim.name == 'confirm' && SONG.noteStyle != 'pixel')
 									{
 										spr.centerOffsets();
 										spr.offset.x -= 13;
@@ -3080,7 +3107,7 @@ class PlayState extends MusicBeatState
 									{
 										spr.animation.play('confirm', true);
 									}
-									if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+									if (spr.animation.curAnim != null && spr.animation.curAnim.name == 'confirm' && SONG.noteStyle != 'pixel')
 									{
 										spr.centerOffsets();
 										spr.offset.x -= 13;
@@ -3947,7 +3974,7 @@ class PlayState extends MusicBeatState
 									{
 										spr.animation.play('confirm', true);
 									}
-									if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+									if (spr.animation.curAnim.name == 'confirm' && SONG.noteStyle != 'pixel')
 									{
 										spr.centerOffsets();
 										spr.offset.x -= 13;
@@ -3977,7 +4004,7 @@ class PlayState extends MusicBeatState
 				if (!keys[spr.ID])
 					spr.animation.play('static', false);
 
-				if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+				if (spr.animation.curAnim != null && spr.animation.curAnim.name == 'confirm' && SONG.noteStyle != 'pixel')
 				{
 					spr.centerOffsets();
 					spr.offset.x -= 13;

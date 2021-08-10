@@ -783,6 +783,9 @@ class ModchartState
 					return Application.current.window.height;
 				});
 
+				Lua_helper.add_callback(lua,"changeNoteStyle",function(style:String) {
+					PlayState.instance.changeNoteStyle(style);
+				});
 	
 				// tweens
 				

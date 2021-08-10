@@ -276,4 +276,102 @@ class Note extends FlxSprite
 				alpha = 0.3;
 		}
 	}
+
+	public function updateDesign()
+		{
+			var noteTypeCheck = PlayState.SONG.noteStyle;
+					
+			switch (noteTypeCheck)
+			{
+				case 'pixel':
+					loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
+					if (isSustainNote)
+						loadGraphic(Paths.image('weeb/pixelUI/arrowEnds', 'week6'), true, 7, 6);
+	
+					for (i in 0...4)
+					{
+						animation.add(dataColor[i] + 'Scroll', [i + 4]); // Normal notes
+						animation.add(dataColor[i] + 'hold', [i]); // Holds
+						animation.add(dataColor[i] + 'holdend', [i + 4]); // Tails
+					}
+	
+					setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+					updateHitbox();
+				default:
+					frames = Paths.getSparrowAtlas('NOTE_assets');
+	
+					for (i in 0...4)
+					{
+						animation.addByPrefix(dataColor[i] + 'Scroll', dataColor[i] + ' alone'); // Normal notes
+						animation.addByPrefix(dataColor[i] + 'hold', dataColor[i] + ' hold'); // Hold
+						animation.addByPrefix(dataColor[i] + 'holdend', dataColor[i] + ' tail'); // Tails
+					}
+	
+					setGraphicSize(Std.int(width * 0.7));
+					updateHitbox();
+					
+					antialiasing = FlxG.save.data.antialiasing;
+			}
+			x += swagWidth * noteData;
+			animation.play(dataColor[noteData] + 'Scroll');
+			originColor = noteData; // The note's origin color will be checked by its sustain notes
+	
+			if (FlxG.save.data.stepMania && !isSustainNote)
+			{
+				var strumCheck:Float = rStrumTime;
+	
+				// I give up on fluctuating bpms. something has to be subtracted from strumCheck to make them look right but idk what.
+				// I'd use the note's section's start time but neither the note's section nor its start time are accessible by themselves
+				//strumCheck -= ???
+	
+				var ind:Int = Std.int(Math.round(strumCheck / (Conductor.stepCrochet / 2)));
+	
+				var col:Int = 0;
+				col = quantityColor[ind % 8]; // Set the color depending on the beats
+	
+				animation.play(dataColor[col] + 'Scroll');
+				localAngle -= arrowAngles[col];
+				localAngle += arrowAngles[noteData];
+				originColor = col;
+			}
+			
+			// we make sure its downscroll and its a SUSTAIN NOTE (aka a trail, not a note)
+			// and flip it so it doesn't look weird.
+			// THIS DOESN'T FUCKING FLIP THE NOTE, CONTRIBUTERS DON'T JUST COMMENT THIS OUT JESUS
+			// then what is this lol
+			// BRO IT LITERALLY SAYS IT FLIPS IF ITS A TRAIL AND ITS DOWNSCROLL
+			if (FlxG.save.data.downscroll && isSustainNote) 
+				flipY = true;
+	
+			var stepHeight = (0.45 * Conductor.stepCrochet * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? PlayState.SONG.speed : PlayStateChangeables.scrollSpeed, 2));
+	
+			if (isSustainNote && prevNote != null)
+			{
+				noteScore * 0.2;
+				alpha = 0.6;
+	
+				x += width / 2;
+	
+				originColor = prevNote.originColor; 
+	
+				animation.play(dataColor[originColor] + 'holdend'); // This works both for normal colors and quantization colors
+				updateHitbox();
+	
+				x -= width / 2;
+	
+				if (prevNote.isSustainNote)
+				{
+					prevNote.animation.play(dataColor[prevNote.originColor] + 'hold');
+					prevNote.updateHitbox();
+	
+					prevNote.scale.y *= (stepHeight + 1) / prevNote.height; // + 1 so that there's no odd gaps as the notes scroll
+					prevNote.updateHitbox();
+					prevNote.noteYOff = Math.round(-prevNote.offset.y);
+	
+					// prevNote.setGraphicSize();
+	
+					noteYOff = Math.round(-offset.y);
+				}
+		}
+		}
 }
