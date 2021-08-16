@@ -81,6 +81,9 @@ class KadeEngineData
 
 		if (FlxG.save.data.resetButton == null)
 			FlxG.save.data.resetButton = false;
+
+		if (FlxG.save.data.InstantRespawn == null)
+			FlxG.save.data.InstantRespawn = false;
 		
 		if (FlxG.save.data.botplay == null)
 			FlxG.save.data.botplay = false;
@@ -108,6 +111,12 @@ class KadeEngineData
 		
 		if (FlxG.save.data.cacheImages == null)
 			FlxG.save.data.cacheImages = false;
+
+		if (FlxG.save.data.editorBG == null)
+			FlxG.save.data.editor = false;
+		
+		if (FlxG.save.data.zoom == null)
+			FlxG.save.data.zoom = 1;
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 		
