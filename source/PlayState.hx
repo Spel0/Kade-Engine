@@ -3312,6 +3312,25 @@ class PlayState extends MusicBeatState
 			clean();
 			FlxG.save.data.offset = offsetTest;
 		}
+		else if (stageTesting)
+		{
+			new FlxTimer().start(0.3, function(tmr:FlxTimer)
+			{
+				for (bg in Stage.toAdd)
+				{
+					remove(bg);
+				}
+				for (array in Stage.layInFront)
+				{
+					for (bg in array)
+						remove(bg);
+				}
+				remove(boyfriend);
+				remove(dad);
+				remove(gf);
+			});
+			FlxG.switchState(new StageDebugState(Stage.curStage));
+		}
 		else
 		{
 			if (isStoryMode)

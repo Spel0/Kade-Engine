@@ -468,10 +468,6 @@ class Character extends FlxSprite
 						else
 							playAnim('danceLeft');
 					}
-				case 'bf':
-					playAnim('idle');
-				case 'bf-pixel':
-					playAnim('idle');
 				default:
 					if (altAnim && animation.getByName('idle-alt') != null)
 						playAnim('idle-alt', forced);
