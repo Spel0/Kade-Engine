@@ -234,6 +234,8 @@ class PlayState extends MusicBeatState
 	var inCutscene:Bool = false;
 	var usedTimeTravel:Bool = false;
 
+	public static var stageTesting:Bool = false;
+
 	public var randomVar = false;
 
 	public static var Stage:Stage;
@@ -375,8 +377,6 @@ class PlayState extends MusicBeatState
 
 		// String for when the game is paused
 		detailsPausedText = "Paused - " + detailsText;
-
-		curStage = "";
 
 		// Updating Discord Rich Presence.
 		DiscordClient.changePresence(detailsText
@@ -4721,7 +4721,7 @@ class PlayState extends MusicBeatState
 			}
 
 			if (PlayStateChangeables.Optimize)
-				if (vocals.volume == 0 && !currentSection.mustHitSection && lastPressedNote != null && lastPressedNote == closestNotes[0])
+				if (vocals.volume == 0 && !currentSection.mustHitSection)
 					vocals.volume = 1;
 		}
 	}
