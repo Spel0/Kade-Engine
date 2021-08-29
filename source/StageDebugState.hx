@@ -8,7 +8,7 @@ import flixel.text.FlxText;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 
-class StagePositioningDebug extends FlxState
+class StageDebugState extends FlxState
 {
 	public var daStage:String;
 	public var daBf:String;
