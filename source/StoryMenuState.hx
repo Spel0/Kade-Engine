@@ -14,7 +14,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.net.curl.CURLCode;
 
-#if windows
+#if desktop
 import Discord.DiscordClient;
 #end
 
@@ -78,7 +78,7 @@ class StoryMenuState extends MusicBeatState
 	{
 		weekUnlocked = unlockWeeks();
 
-		#if windows
+		#if desktop
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Story Mode Menu", null);
 		#end
@@ -340,7 +340,7 @@ class StoryMenuState extends MusicBeatState
 			PlayState.storyPlaylist = weekData()[curWeek];
 			PlayState.isStoryMode = true;
 			selectedWeek = true;
-
+			PlayState.songMultiplier = 1;
 
 			PlayState.storyDifficulty = curDifficulty;
 
