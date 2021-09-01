@@ -653,6 +653,11 @@ class PlayState extends MusicBeatState
 			if (!PlayStateChangeables.Optimize)
 				switch (Stage.curStage)
 				{
+					case 'stage':
+					if (dad.curCharacter == "bf-pixel"){
+						dad.y = boyfriend.y + 150;
+						dad.x = boyfriend.x - 450;
+					}
 					case 'limo':
 						boyfriend.y -= 220;
 						boyfriend.x += 260;
