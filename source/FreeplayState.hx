@@ -72,7 +72,8 @@ class FreeplayState extends MusicBeatState
 	{
 		clean();
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('data/freeplaySonglist'));
-		initSonglist.push("test:bf-pixel:0");
+		if (!initSonglist.contains('test:bf-pixel:0'))
+			initSonglist.push("test:bf-pixel:0");
 
 		//var diffList = "";
 
