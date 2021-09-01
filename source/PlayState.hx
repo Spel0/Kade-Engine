@@ -2118,10 +2118,7 @@ class PlayState extends MusicBeatState
 			{
 				if (songStarted && !endingSong)
 				{
-					// Song ends abruptly on slow rate even with second condition being deleted, 
-					// and if it's deleted on songs like cocoa then it would end without finishing instrumental fully,
-					// so no reason to delete it at all
-					if (unspawnNotes.length == 0 && notes.length == 0)
+					if (unspawnNotes.length == 0 && notes.length == 0 && FlxG.sound.music.length - Conductor.songPosition <= 100)
 					{
 						endingSong = true;
 						new FlxTimer().start(2, function(timer) {
