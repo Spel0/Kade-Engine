@@ -220,12 +220,13 @@ class Note extends FlxSprite
 			flipY = true;
 
 		
-		var stepHeight = (((0.45 * Conductor.stepCrochet)) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? PlayState.SONG.speed : PlayStateChangeables.scrollSpeed, 2));
+		var stepHeight = (((0.45 * Conductor.stepCrochet) / (PlayState.songMultiplier < 1 ? PlayState.songMultiplier : 1)) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? PlayState.SONG.speed : PlayStateChangeables.scrollSpeed, 2));
 
-		// we can't divide step height cuz if we do uh it'll fucking lag the shit out of the game
 
 		if (isSustainNote && prevNote != null)
 		{
+			noteYOff = Math.round(-stepHeight + swagWidth * 0.5);
+			
 			noteScore * 0.2;
 			alpha = 0.6;
 
@@ -249,14 +250,11 @@ class Note extends FlxSprite
 				prevNote.animation.play(dataColor[prevNote.originColor] + 'hold');
 				prevNote.updateHitbox();
 
-
-				prevNote.scale.y *= (stepHeight + 1) / prevNote.height; // + 1 so that there's no odd gaps as the notes scroll
+				prevNote.scale.y *= stepHeight / prevNote.height;
 				prevNote.updateHitbox();
-				prevNote.noteYOff = Math.round(-prevNote.offset.y);
-
-				// prevNote.setGraphicSize();
-
-				noteYOff = Math.round(-offset.y);
+				
+				if (antialiasing)
+					prevNote.scale.y *= 1.0 + (1.0 / prevNote.frameHeight);
 			}
 		}
 	}
@@ -301,9 +299,8 @@ class Note extends FlxSprite
 		else
 		{
 			canBeHit = false;
-
-			if (strumTime <= Conductor.songPosition)
-				wasGoodHit = true;
+			//if (strumTime <= Conductor.songPosition)
+			//	wasGoodHit = true;
 		}
 
 		if (tooLate && !wasGoodHit)
