@@ -242,8 +242,6 @@ class PlayState extends MusicBeatState
 	public static var stageTesting:Bool = false;
 	var camPos:FlxPoint;
 
-	public static var stageTesting:Bool = false;
-
 	public var randomVar = false;
 
 	public static var Stage:Stage;
